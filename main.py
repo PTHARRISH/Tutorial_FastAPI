@@ -42,7 +42,13 @@ def employee_name(name: str):
             return e
 
 
- # 3. Query parameter
- @app.get("/emp")
-def query_param():
-    
+# 3. Query parameter
+@app.get("/emp_query")
+def name_query_param(name: str):
+    for i in emp:
+        if i["name"] == name:
+            return i
+
+
+# 4.request body
+
