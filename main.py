@@ -40,3 +40,9 @@ def employee_name(name: str):
     for e in emp:
         if e["name"] == name:
             return e
+
+
+ # 3. Query parameter
+ @app.get("/emp")
+def query_param():
+    
