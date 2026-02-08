@@ -1,0 +1,9 @@
+{% extends "layout.html"%}
+{% block content %}
+<h1>Home page</h1>
+<p>This is using a templates</p>
+{% for pro in product %}
+<h1>{{pro.productName}}</h1>
+<p>{{pro.price}}</p>
+{% endfor %}
+{% endblock content %}

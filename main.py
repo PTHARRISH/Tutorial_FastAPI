@@ -1,54 +1,73 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
+templates = Jinja2Templates(directory="templates").TemplateResponse
 
-@app.get("/display")
-def view():
-    return "Hello world Harrish"
-
-
-# 2. path parameter
-@app.get("/path/{id}")
-def path_parameter(id):
-    return f"The path id you passed is: {id}"
-
-
-emp = [
+product: list[dict] = [
     {
-        "id": 1,
-        "name": "Admin",
-        "location": "Bengaluru",
+        "productId": 101,
+        "productName": "Wireless Mouse",
+        "price": 25.99,
     },
     {
-        "id": 16,
-        "name": "Harrish PT",
-        "location": "Bengaluru",
+        "productId": 102,
+        "productName": "Keyboard",
+        "price": 45.99,
     },
 ]
 
-
-@app.get("/employee/{id}")
-def employee_details(id: int):
-    for e in emp:
-        if e["id"] == id:
-            return e
-
-
-@app.get("/emp_name/{name}")
-def employee_name(name: str):
-    for e in emp:
-        if e["name"] == name:
-            return e
+# HTMLResponse
+# from fastapi.responses import HTMLResponse
+# response display in HTML
+# Json Response or dictif you return it will show error in HTML response internal server error
+# ex: @app.get("/", response_class=HTMLResponse)
 
 
-# 3. Query parameter
-@app.get("/emp_query")
-def name_query_param(name: str):
-    for i in emp:
-        if i["name"] == name:
-            return i
+# include_in_schema = False
+# HTML routes only for user view not for json response better to hide in docs
+# Hide in docs add after response_class type include_in_schema=False
+# route will work but hide in docs
+# ex: @app.get("/products", response_class=HTMLResponse,include_in_schema=False)
+
+# Two Routes
+# stacking decorator two routes for same function
+# ex: @app.get("/", response_class=HTMLResponse)
+#     @app.get("/products", response_class=HTMLResponse)
 
 
-# 4.request body
+@app.get("/", response_class=HTMLResponse)
+@app.get("/products", response_class=HTMLResponse, include_in_schema=False)
+def home():
+    # return {"message": "Hello World"}
+    return f"<H1>{product[1]['productName']}</H1>"
 
+
+@app.get("/home")
+def get_home(request: Request):
+    return templates(request, "home.html", {"product": product, "title": "Home"})
+
+
+# Jinja2Templates
+# Jinja is a templating engine for Python,
+# import Request in fastapi and create variable
+# and assign templates = Jinja2Templates(directory="templates").TemplateResponse
+# remove the response_class=HTMLResponse from def and add in parameters request: Request
+# then in return templates(request, "home.html")
+
+# Context
+# Template variables are defined by the context dictionary passed to the template.
+
+# Jinja template inheritance
+# Jinja template inheritance is a powerful feature that allows you to create reusable
+# and maintainable templates by defining a base structure and extending
+# it in child templates.
+# This approach is particularly useful for web applications where multiple pages
+# share common elements like headers, footers, or navigation menus.
+
+
+@app.get("/api/product")
+def get_product():
+    return product
